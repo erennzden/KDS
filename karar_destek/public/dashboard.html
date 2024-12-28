@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fırın KDS - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js eklendi -->
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile-section">
+                <img src="images/profile.jpeg" alt="Profil Resmi" class="profile-picture">
+                <h3>Vahap Tecim</h3>
+                <p>Yönetici</p>
+            </div>
+            <ul class="menu">
+                <!-- Dashboard Dropdown -->
+                <li class="dropdown">
+                    <span onclick="toggleDropdown('dashboard-dropdown')">Tahminleme</span>
+                    <ul class="submenu" id="dashboard-dropdown">
+                        <li><a href="/tahminleme/tahmin_yap">Tahminleme Yap</a></li>
+                    </ul>
+                </li>
+                <!-- Güzergahlar Dropdown -->
+                <li class="dropdown">
+                    <span onclick="toggleDropdown('routes-dropdown')">Güzergahlar</span>
+                    <ul class="submenu" id="routes-dropdown">
+                        <li><a href="/guzergahlar/karsiyaka">Karşıyaka</a></li>
+                        <li><a href="guzergahlar/bozyaka">Bozyaka</a></li>
+                        <li><a href="/guzergahlar/konak">Konak</a></li>
+                        <li><a href="/guzergahlar/gaziemir">Gaziemir</a></li>
+                        <li><a href="/guzergahlar/buca">Buca</a></li>
+                    </ul>
+                </li>
+                <!-- Ürünler Dropdown -->
+                <li class="dropdown">
+                    <span onclick="toggleDropdown('products-dropdown')">Ürünler</span>
+                    <ul class="submenu" id="products-dropdown">
+                        <li><a href="/urunler/tam_bugday">Tam Buğday (400gr)</a></li>
+                        <li><a href="/urunler/kepek_ekmek">Kepek Ekmek (200gr)</a></li>
+                        <li><a href="/urunler/cavdar_ekmegi">Çavdar Ekmeği (400gr)</a></li>
+                        <li><a href="/urunler/karadeniz_ekmegi">Karadeniz Ekmeği (500gr)</a></li>
+                        <li><a href="/urunler/karakilcik_ekmegi">Karakılçık Ekmeği (500gr)</a></li>
+                        <li><a href="/urunler/eksi_maya_ekmegi">Ekşi Maya Ekmeği (500gr)</a></li>
+                        <li><a href="/urunler/ekmek">Ekmek (200gr)</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Dashboard</h1>
+            <div class="charts-container">
+                <!-- Grafik 1 -->
+                <div class="chart-box">
+                    <h3>Ürün Satışları (2023 ve 2024)</h3>
+                    <canvas id="urunSatisGrafik"></canvas>
+                </div>
+                
+                <!-- Grafik 2 -->
+                <div class="chart-box">
+                    <h3>Ürün İadeler (2023 ve 2024)</h3>
+                    <canvas id="urunIadeGrafik"></canvas>
+                </div>
+                            
+                <!-- Grafik 3 -->
+                <div class="chart-box">
+                    <h3>Ürün Bazında İade Oranları 2023</h3>
+                    <canvas id="urunIadePasta"></canvas>
+                </div>
+                
+                <!-- Grafik 4 -->
+                <div class="chart-box">
+                    <h3>Ürün Bazında İade Oranları 2024</h3>
+                    <canvas id="urunIadeOranGrafik"></canvas>
+                </div>                
+
+            </div>
+        </main>
+        
+
+        <!-- Çıkış Yap Butonu -->
+        <a href="index.html" class="logout-btn">Çıkış Yap</a>
+    </div>
+
+    <!-- Chart.js Grafik Scripti -->
+    <script>
+        // Dropdown Menü Göster/Gizle
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Ürün Satışları (2023 ve 2024) için Chart.js Grafik
+        fetch('/api/urun-satis') // API'den verileri çekiyoruz
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Urun);
+                const sales2023 = data.map(item => item.Satis_2023);
+                const sales2024 = data.map(item => item.Satis_2024);
+
+                const ctx = document.getElementById('urunSatisGrafik').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: '2023 Satışları',
+                                data: sales2023,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: '2024 Satışları',
+                                data: sales2024,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Grafik verileri alınırken hata:', error));
+
+        // Ürün iade verilerini API'den çek ve grafiği oluştur
+        fetch('/api/urun-iadeler')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Urun);
+                const iades2023 = data.map(item => item.Iade_2023);
+                const iades2024 = data.map(item => item.Iade_2024);
+
+                const ctx = document.getElementById('urunIadeGrafik').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: '2023 İadeler',
+                                data: iades2023,
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: '2024 İadeler',
+                                data: iades2024,
+                                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                                borderColor: 'rgba(255, 159, 64, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Grafik verileri alınırken hata:', error));
+        
+        fetch('/api/urun-iadeler')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Urun);
+                const iades2023 = data.map(item => item.Iade_2023);
+
+                // 2023 İade Oranları
+                const ctx2023 = document.getElementById('urunIadePasta').getContext('2d');
+                new Chart(ctx2023, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '2023 İade Sayıları',
+                            data: iades2023,
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#FFA726', '#AB47BC'
+                            ]
+                        }]
+                    }
+                });
+            });
+        
+        // Ürün Bazında 2024 İade Oranlarını API'den Çek ve Pasta Grafiği Oluştur
+        fetch('/api/urun-iadeler-2024')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Urun); // Ürün adları
+                const values = data.map(item => item.Toplam_Iade_2024); // 2024 iade miktarları
+
+                const ctx = document.getElementById('urunIadeOranGrafik').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '2024 İade Sayıları',
+                            data: values,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)',
+                                'rgba(201, 203, 207, 0.2)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            })
+            .catch(error => console.error('Grafik verileri alınırken hata:', error));
+
+
+            
+    </script>
+</body>
+</html>

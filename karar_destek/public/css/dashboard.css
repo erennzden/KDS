@@ -1,0 +1,192 @@
+/* Genel Dashboard Yapısı */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #2c3e50, #34495e); /* Gri-Siyah Geçişli Arka Plan */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    position: relative;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar a:hover {
+    color: #4CAF50; /* Hover rengi */
+}
+
+
+
+/* Profil Alanı */
+.profile-section {
+    text-align: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #2E8B57, #34495e);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.profile-section img.profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    margin-bottom: 10px;
+}
+
+.profile-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.profile-section p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Menü */
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu li {
+    margin-bottom: 15px;
+}
+
+.menu .dropdown > span {
+    cursor: pointer;
+    font-weight: bold;
+    display: block;
+    transition: color 0.3s;
+    font-size: 1rem;
+}
+
+.menu .dropdown > span:hover {
+    color: #4CAF50;
+}
+
+/* Alt Menü */
+.submenu {
+    list-style: none;
+    margin-top: 10px;
+    padding-left: 15px;
+    display: none; /* Varsayılan olarak gizli */
+}
+
+.submenu.show {
+    display: block; /* Açık durum */
+}
+
+
+.submenu li {
+    margin-bottom: 10px;
+}
+
+.submenu a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s, background 0.3s;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: block;
+}
+
+.submenu a:hover {
+    color: #fff;
+    background: #4CAF50;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    background: #f5f5f5;
+    padding: 20px;
+}
+
+/* Çıkış Yap Butonu */
+.logout-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #2E8B57, #34495e); /* Profil kısmı ile uyumlu gradient */
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #34495e, #2E8B57); /* Hover durumunda ters gradient */
+    transform: scale(1.05); /* Hafif büyüme efekti */
+}
+
+
+/* Grafik Kutuları */
+.charts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2x2 düzen */
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center; /* Kutu gridini yatayda ortala */
+}
+
+/* Kutu Stili */
+.chart-box {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 320px; /* Daha büyük kutu boyutu */
+    display: flex;
+    flex-direction: column; /* İçerik dikey düzen */
+    justify-content: space-between; /* Grafik ve başlık boşluğu */
+    align-items: center; /* Ortala */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chart-box h3 {
+    font-size: 1rem; /* Daha küçük başlık */
+    font-weight: bold;
+    color: #555;
+    margin: 0; /* Üst boşluk kaldırıldı */
+    text-align: center;
+}
+
+/* Hover Efekti */
+.chart-box:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+/* Grafik Alanı */
+canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px; /* Grafik köşeleri yumuşatıldı */
+}
+
+/* Grafik Boyutu */
+.chart-box canvas {
+    max-height: 240px; /* Grafik boyutunu sınırlı tut */
+    max-width: 100%; /* Kutu genişliğine uyumlu */
+}
+

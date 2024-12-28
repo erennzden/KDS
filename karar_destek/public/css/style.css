@@ -1,0 +1,165 @@
+/* Genel Ayarlar */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(135deg, #4CAF50, #2E8B57); /* Yeşil gradient */
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Buhar/Duman Efektleri */
+.smoke {
+    position: absolute;
+    bottom: -100px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent);
+    opacity: 0.5;
+    border-radius: 50%;
+    animation: smokeMove 8s infinite ease-in-out;
+    z-index: 0;
+}
+
+.smoke-left {
+    left: 10%;
+    animation-duration: 10s;
+}
+
+.smoke-right {
+    right: 10%;
+    animation-duration: 12s;
+}
+
+.smoke2 {
+    left: 15%;
+    width: 120px;
+    height: 120px;
+    animation-duration: 12s;
+    animation-delay: 2s;
+}
+
+.smoke3 {
+    right: 15%;
+    width: 140px;
+    height: 140px;
+    animation-duration: 14s;
+    animation-delay: 4s;
+}
+
+@keyframes smokeMove {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-300px) scale(1.5);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-500px) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Kart Tasarımı */
+.card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 400px;
+    position: relative;
+    z-index: 1;
+    animation: breathe 3s infinite alternate ease-in-out;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #2E8B57;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #4CAF50;
+}
+
+.btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.8rem 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #388E3C;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Nefes Alma Efekti */
+@keyframes breathe {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.02);
+    }
+}

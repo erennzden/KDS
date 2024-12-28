@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Buhar Efektleri -->
+        <div class="smoke smoke-left"></div>
+        <div class="smoke smoke-left smoke2"></div>
+        <div class="smoke smoke-right"></div>
+        <div class="smoke smoke-right smoke3"></div>
+
+        <!-- Giriş Paneli -->
+        <div class="card">
+            <h1>Giriş</h1>
+            <!-- Form Başlangıcı -->
+            <form id="loginForm" action="/login" method="POST">
+                <!-- Hata Mesajı -->
+                <div id="error-message" style="color: red; margin-top: 10px; display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="name">Kullanıcı Adı</label>
+                    <input type="text" id="name" name="username" placeholder="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <div class="password-group">
+                        <input type="password" id="password" name="password" placeholder="password" required>
+                        <span class="toggle-password" onclick="togglePassword()">👁</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Giriş</button>
+            </form>
+            <!-- Form Bitişi -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

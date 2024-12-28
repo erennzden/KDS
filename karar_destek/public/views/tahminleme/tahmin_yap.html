@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahminleme Yap</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Tahminleme Yap</h1>
+            
+            <!-- Üst Grafikler SelectBox -->
+            <label for="tahmin-orani">Tahmin Oranı (Satış ve İade):</label>
+            <select id="tahmin-orani">
+                <option value="10">%10</option>
+                <option value="20">%20</option>
+                <option value="30">%30</option>
+            </select>
+
+            <!-- Üst Grafikler -->
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h3>Tahmini Satışlar</h3>
+                    <canvas id="salesChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Tahmini İadeler</h3>
+                    <canvas id="returnsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Alt Grafikler SelectBox -->
+            <label for="mevsim-secimi">Mevsim Seçimi:</label>
+            <select id="mevsim-secimi">
+                <option value="yaz">Yaz</option>
+                <option value="kış">Kış</option>
+            </select>
+            <label for="mevsim-orani">Tahmin Oranı:</label>
+            <select id="mevsim-orani">
+                <option value="10">%10</option>
+                <option value="20">%20</option>
+                <option value="30">%30</option>
+                <option value="40">%40</option>
+                <option value="50">%50</option>
+            </select>
+
+
+
+            <!-- Alt Grafikler -->
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h3>Fiyat Artışına Göre Tahmini Satışlar</h3>
+                    <canvas id="priceSalesChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Fiyat Artışına Göre Tahmini İadeler</h3>
+                    <canvas id="priceReturnsChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar yükle
+        fetch('/sidebar.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('sidebar-container').innerHTML = data);
+
+        // Üst grafikler için değişkenler
+        let salesChartInstance = null;
+        let returnsChartInstance = null;
+
+        // Alt grafikler için değişkenler
+        let priceSalesChartInstance = null;
+        let priceReturnsChartInstance = null;
+
+        // Üst grafikler SelectBox kontrolü
+        document.getElementById('tahmin-orani').addEventListener('change', function () {
+            const selectedRate = this.value;
+            updateUpperCharts(selectedRate);
+        });
+
+        document.getElementById('mevsim-secimi').addEventListener('change', function () {
+            const selectedSeason = this.value;
+            const selectedRate = document.getElementById('mevsim-orani').value;
+            updateSeasonalCharts(selectedSeason, selectedRate);
+        });
+
+        document.getElementById('mevsim-orani').addEventListener('change', function () {
+            const selectedRate = this.value;
+            const selectedSeason = document.getElementById('mevsim-secimi').value;
+            updateSeasonalCharts(selectedSeason, selectedRate);
+        });
+
+
+        // Üst grafiklerin güncellenmesi
+        function updateUpperCharts(rate) {
+            fetch(`/api/tahminleme?salesRate=${rate}&returnsRate=${rate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (salesChartInstance) salesChartInstance.destroy();
+                    salesChartInstance = new Chart(document.getElementById('salesChart').getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.sales.map(item => item.Urun),
+                            datasets: [{
+                                label: 'Tahmini Satış',
+                                data: data.sales.map(item => item.Tahmini_Satis),
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+
+                    if (returnsChartInstance) returnsChartInstance.destroy();
+                    returnsChartInstance = new Chart(document.getElementById('returnsChart').getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.returns.map(item => item.Urun),
+                            datasets: [{
+                                label: 'Tahmini İade',
+                                data: data.returns.map(item => item.Tahmini_Iade),
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+                });
+        }
+
+        // Alt grafiklerin güncellenmesi
+        function updateSeasonalCharts(season, rate) {
+            fetch(`/api/mevsimsel-tahminleme?season=${season}&rate=${rate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (priceSalesChartInstance) priceSalesChartInstance.destroy();
+                    priceSalesChartInstance = new Chart(document.getElementById('priceSalesChart').getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(item => item.Urun),
+                            datasets: [{
+                                label: `${season.charAt(0).toUpperCase() + season.slice(1)} Mevsimi Tahmini Satış`,
+                                data: data.map(item => item.Tahmini_Satis),
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+
+                    if (priceReturnsChartInstance) priceReturnsChartInstance.destroy();
+                    priceReturnsChartInstance = new Chart(document.getElementById('priceReturnsChart').getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(item => item.Urun),
+                            datasets: [{
+                                label: `${season.charAt(0).toUpperCase() + season.slice(1)} Mevsimi Tahmini İade`,
+                                data: data.map(item => item.Tahmini_Iade),
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+                })
+                .catch(error => console.error('API Hatası:', error));
+        }
+
+
+
+        // İlk yükleme
+        updateUpperCharts(10); // Üst grafikler için varsayılan oran
+        // İlk yükleme
+        updateSeasonalCharts('yaz', 10); // Varsayılan olarak yaz ve %10 oran
+
+    </script>
+</body>
+</html>

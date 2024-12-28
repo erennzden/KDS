@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bozyaka</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Bozyaka Güzergahı</h1>
+            <div class="charts-container">
+                <!-- Grafik 1 Kutusu -->
+                <div class="chart-box">
+                    <h3>Bayilerin İade Sayıları</h3>
+                    <canvas id="grafik1"></canvas>
+                </div>
+
+                <!-- Grafik 2 Kutusu -->
+                <div class="chart-box">
+                    <h3>Ürünlerin İade Dağılımı</h3>
+                    <canvas id="grafik2"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar'ı yükle
+        fetch('/sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+
+                // Dropdown işlevini yeniden bağla
+                document.querySelectorAll('.dropdown > span').forEach(span => {
+                    const id = span.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    span.addEventListener('click', () => toggleDropdown(id));
+                });
+            })
+            .catch(error => console.error('Sidebar yüklenirken hata oluştu:', error));
+
+        // Grafik 1: En Fazla İade Yapan 5 Bayi
+        fetch('/api/bozyaka_guzergah-en-fazla-iade-bayi/1')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Bayi);
+                const values = data.map(item => item.Iade_Sayisi);
+
+                const ctx1 = document.getElementById('grafik1').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Toplam İade Sayısı',
+                            data: values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('En fazla iade yapan bayiler grafiği yüklenirken hata:', error));
+
+        // Grafik 2: Ürünlerin İade Dağılımı
+        fetch('/api/bozyaka_guzergah-urun-iade-dagilimi/1')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.Urun);
+                const values = data.map(item => item.Iade_Miktari);
+
+                const ctx2 = document.getElementById('grafik2').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'İade Miktarı',
+                            data: values,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw} adet`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Ürünlerin iade dağılımı grafiği yüklenirken hata:', error));
+    </script>
+</body>
+</html>
